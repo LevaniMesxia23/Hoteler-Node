@@ -1,15 +1,16 @@
-import { startServer } from "./server";
-import { pool } from "./config/db";
-startServer();
+import { PrismaClient } from './generated/prisma'; 
+const prisma = new PrismaClient();
 
 async function main() {
-  try {
-    const response = await pool.query("SELECT NOW()");
-    console.log("Database Connected:", response.rows[0].now);
-    startServer();
-  } catch (error) {
-    console.error("Error connecting to database", error);
-  }
+  const users = await prisma.user.findMany();
+  console.log(users);
 }
 
-main();
+main()
+  .catch((e) => {
+    console.error(e);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
