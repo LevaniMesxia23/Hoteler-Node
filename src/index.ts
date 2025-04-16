@@ -1,16 +1,11 @@
-import { PrismaClient } from './generated/prisma'; 
-const prisma = new PrismaClient();
+import express, { urlencoded } from "express";
 
-async function main() {
-  const users = await prisma.user.findMany();
-  console.log(users);
-}
+const app = express();
+app.use(express.json());
+app.use(urlencoded({ extended: true }));
 
-main()
-  .catch((e) => {
-    console.error(e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "Hello World" });
+});
+
+export default app;
