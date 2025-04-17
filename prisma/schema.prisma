@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -14,38 +13,65 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Role {
-  USER
-  ADMIN
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+  role     String @default("user")
+
+  createdAt DateTime  @default(now())
+  bookings   Booking[]
+  cartItems  CartItem[]
 }
 
-model User {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  email    String    @unique
-  username String    @unique
-  password String
-  role     Role      @default(USER)
-  Booking  Booking[]
-  Review   Review[]
+enum RoomType {
+  SINGLE
+  DOUBLE
+  TRIPLE
+  SUITE
+  KING
+  QUEEN
+  TWIN
+  DOUBLE_DOUBLE
+  TRIPLE_DOUBLE
+  SUITE_DOUBLE
+  SUITE_KING
 }
 
 model Room {
-  id        String   @id @default(uuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id            Int      @id @default(autoincrement())
+  roomNumber    String   @unique
+  type          RoomType
+  pricePerNight Int
+  description   String?
+  images        String[]
+  capacity      Int
 
+  createdAt DateTime  @default(now())
+  bookings   Booking[]
+  cartItems  CartItem[]
+}
+
+model Service {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
   type        String
-  capacity    Int
   price       Int
-  image       String
-  location    String
-  isAvailable Boolean   @default(true)
-  amenities   String[]
-  Booking     Booking[]
-  Review      Review[]
+  images      String[]
+
+  createdAt DateTime @default(now())
+}
+
+model Staff {
+  id       Int     @id @default(autoincrement())
+  name     String
+  role     String
+  bio      String?
+  photoUrl String?
+
+  createdAt DateTime @default(now())
 }
 
 enum BookingStatus {
@@ -55,47 +81,45 @@ enum BookingStatus {
 }
 
 model Booking {
-  id         String        @id @default(uuid())
-  createdAt  DateTime      @default(now())
-  updatedAt  DateTime      @updatedAt
-  checkIn    DateTime
-  checkOut   DateTime
-  totalPrice Int
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  roomId       Int
+  checkInDate  DateTime
+  checkOutDate DateTime
+  adults       Int
+  children     Int
+
   status     BookingStatus @default(PENDING)
-  userId     String
-  user       User          @relation(fields: [userId], references: [id])
-  roomId     String
-  room       Room          @relation(fields: [roomId], references: [id])
-  Payment    Payment[]
+  totalPrice Int
+  createdAt  DateTime      @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
+
+  extraServices ExtraService[]
 }
 
-model Review {
-  id        String   @id @default(uuid())
+model ExtraService {
+  id Int @id @default(autoincrement())
+  name String
+  bookingId Int
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  rating  Int
-  comment String
-  userId  String
-  user    User   @relation(fields: [userId], references: [id])
-  roomId  String
-  room    Room   @relation(fields: [roomId], references: [id])
+  booking Booking @relation(fields: [bookingId], references: [id])
 }
 
-enum PaymentStatus {
-  PENDING
-  SUCCESS
-  FAILED
-}
-
-model Payment {
-  id        String   @id @default(uuid())
+model CartItem {
+  id Int @id @default(autoincrement())
+  userId Int
+  roomId Int
+  checkIn DateTime
+  checkOut DateTime
+  adults Int
+  children Int
+  services String? 
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  amount        Int
-  paymentMethod String
-  status        PaymentStatus @default(PENDING)
-  bookingId     String
-  booking       Booking       @relation(fields: [bookingId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
 }
