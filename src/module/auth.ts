@@ -30,7 +30,7 @@ export const verifyToken = (token: string, secret: string) => {
     throw new Error("Invalid token")
   }
 };
-export const comparePassword = async(password: string, hashedPassword: string) {
+export const comparePassword = async(password: string, hashedPassword: string)=> {
     const isMatch = await bcrypt.compare(password, hashedPassword)
     return isMatch
 }
