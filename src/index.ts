@@ -1,11 +1,11 @@
-import express, { urlencoded } from "express";
 
-const app = express();
-app.use(express.json());
-app.use(urlencoded({ extended: true }));
+import dotenv from "dotenv";
+import app from "./server";
 
-app.get("/", (req, res) => {
-  res.status(200).json({ message: "Hello World" });
+dotenv.config();
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port http://localhost:${PORT}`);
 });
-
-export default app;
