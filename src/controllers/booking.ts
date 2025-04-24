@@ -107,3 +107,50 @@ export const createBooking = async (
     success: true,
   });
 };
+
+export const getBookings = async (req: AuthenticatedRequest, res: Response) => {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      userId: req.user!.id,
+    },
+    include: {
+      room: true,
+      extraServices: true,
+    },
+  });
+
+  res.status(200).json({
+    bookings,
+    success: true,
+  });
+};
+
+export const cancelBooking = async (req: AuthenticatedRequest, res: Response) => {
+  const id = Number(req.params.id);
+
+  const booking = await prisma.booking.findUnique({
+    where: {
+      id,
+      userId: req.user!.id,
+    },
+  });
+
+  if (!booking || booking.userId !== req.user!.id) {
+    res.status(404).json({
+      message: "Booking not found",
+    });
+    return;
+  }
+
+  await prisma.booking.update({
+    where: { id },
+    data: {
+      status: "CANCELLED",
+    },
+  });
+
+  res.status(200).json({
+    message: "Booking cancelled successfully",
+    success: true,
+  });
+};
