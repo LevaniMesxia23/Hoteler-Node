@@ -1,7 +1,7 @@
-
 import express, { urlencoded, Request, Response, NextFunction } from "express";
 import authRoutes from "./routes/auth";
 import roomRoutes from "./routes/roomRoutes";
+import serviceRoutes from "./routes/serviceRoutes";
 
 const app = express();
 
@@ -17,7 +17,8 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 app.use("/api/auth", authRoutes);
 
-app.use("/api/rooms",roomRoutes);
+app.use("/api/rooms", roomRoutes);
 
+app.use("/api/services", serviceRoutes);
 
 export default app;

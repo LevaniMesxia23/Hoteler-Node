@@ -62,8 +62,6 @@ model Service {
   images      String[]
 
   createdAt DateTime @default(now())
-  Booking   Booking? @relation(fields: [bookingId], references: [id])
-  bookingId Int?
 }
 
 model Staff {
@@ -99,8 +97,6 @@ model Booking {
   room Room @relation(fields: [roomId], references: [id])
 
   extraServices ExtraService[]
-
-  Service Service[]
 }
 
 model ExtraService {

@@ -105,30 +105,30 @@ export const login = async (req: Request, res: Response) => {
 };
 
 export const getMe = async (req: AuthenticatedRequest, res: Response) => {
-    const user = req.user;
+  const user = req.user;
 
-    if(!user){
-        res.status(401).json({
-            message: "Unauthorized",
-        })
-        return;
-    }
+  if (!user) {
+    res.status(401).json({
+      message: "Unauthorized",
+    });
+    return;
+  }
 
-    const profile = await prisma.user.findUnique({
-        where: {
-            id: user.id,
-        },
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            createdAt: true,
-        }
-    })
+  const profile = await prisma.user.findUnique({
+    where: {
+      id: user.id,
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      role: true,
+      createdAt: true,
+    },
+  });
 
-    res.status(200).json({
-        message: "Profile fetched successfully",
-        profile,
-    })
-}
+  res.status(200).json({
+    message: "Profile fetched successfully",
+    profile,
+  });
+};
